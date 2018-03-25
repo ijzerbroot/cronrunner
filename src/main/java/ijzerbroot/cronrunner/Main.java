@@ -13,7 +13,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
@@ -29,30 +28,16 @@ import org.bson.Document;
  */
 public class Main {
 
+
+    
     public void initcron() {
 
         String mongourl = "mongodb://cronmongo:27017";
         String crontabtekst = "";
 
-        MongoClient mongoClient;
-        mongoClient = new MongoClient(new MongoClientURI(mongourl));
+        Mongodbo mongocon = new Mongodbo();
+        mongocon.getcronjobs(mongourl);
 
-        MongoDatabase database;
-        database = mongoClient.getDatabase("crondb");
-        MongoCollection<Document> collection;
-
-        collection = database.getCollection("cronjobs");
-
-        BasicDBObject query;
-        query = new BasicDBObject();
-        MongoCursor<Document> cursor = collection.find(query).iterator();
-        try {
-            while (cursor.hasNext()) {
-                System.out.println(cursor.next().toJson());
-            }
-        } finally {
-            cursor.close();
-        }
     }
 
     /**
@@ -72,7 +57,13 @@ public class Main {
             CommandLine cmd = parser.parse(options, args);
             if (cmd.hasOption("initcron")) {
                 System.out.println("Got initcron");
-                // init crontab
+                Cronfile cfile = new Cronfile();
+                try {
+                    cfile.initcronfile();
+                    // init crontab
+                } catch (IOException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else if (cmd.hasOption("cronjob")) {
                 System.out.println("Got cronjob");
                 // exec cronjob
