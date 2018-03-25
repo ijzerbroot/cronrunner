@@ -1,0 +1,36 @@
+## YAML Template.
+---
+version: '3.4'
+
+networks:
+  cronrunner:
+
+services:
+  cronrunner:
+    image: local/cronrunner:1
+    restart: on-failure
+    networks:
+      - cronrunner
+    deploy:
+      mode: global
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  cronmongo:
+    image: mongo:3.6
+    networks:
+      - cronrunner
+    volumes:
+      - cronmongodata:/data/db
+    command: --smallfiles
+    stdin_open: true
+    ports:
+      - "127.0.0.1:27018:27017"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role != manager
+
+volumes:
+  cronmongodata:
