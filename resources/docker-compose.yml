@@ -6,15 +6,15 @@ networks:
   cronrunner:
 
 services:
-  cronrunner:
-    image: local/cronrunner:1
-    restart: on-failure
-    networks:
-      - cronrunner
-    deploy:
-      mode: global
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+#  cronrunner:
+#   image: local/cronrunner:1
+#   restart: on-failure
+#   networks:
+#     - cronrunner
+#   deploy:
+#     mode: global
+#   volumes:
+#     - /var/run/docker.sock:/var/run/docker.sock
 
   cronmongo:
     image: mongo:3.6
