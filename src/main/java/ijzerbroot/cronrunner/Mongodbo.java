@@ -58,7 +58,7 @@ public class Mongodbo {
            //     System.out.println(cursor.next().toJson());
                 Document cronjobentry = cursor.next();
                 System.out.println("getting cronline for: " + cronjobentry.get("jobname"));
-                cronjobline = cronjobentry.get("schedule") + " cronrunner.sh --cronjob " + cronjobentry.get("scriptname");
+                cronjobline = cronjobentry.get("schedule") + " cronrunner.sh -cronjob " + cronjobentry.get("scriptname");
                 System.out.println(cronjobline);
                 cronjoblist.add(cronjobline);
             }

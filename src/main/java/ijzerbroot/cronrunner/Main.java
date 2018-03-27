@@ -31,7 +31,7 @@ public class Main {
     public static void main(String[] args) {
         // commons-cli options object
         Options options = new Options();
-        String mongourl = "mongodb://localhost:27018";
+        String mongourl = "mongodb://resources_cronmongo_1:27017";
 
         // add initcron option
         options.addOption("initcron", false, "Build crontab and scripts from Mongo data");
@@ -69,11 +69,11 @@ public class Main {
                 Document logentry = new Document();
                 logentry.put("jobname", cmd.getOptionValue("cronjob"));
                 Calendar cal = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("DD-MM-YYYY HH:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
                 // exec job and catch stdin/stdout into Document
                 try {
-                    Process jobproc = new ProcessBuilder().command("./" + cmd.getOptionValue("cronjob")).start();
+                    Process jobproc = new ProcessBuilder().command("sh", cmd.getOptionValue("cronjob")).start();
                     try {
                         int exitcode = jobproc.waitFor();
                         if (exitcode != 0) {
