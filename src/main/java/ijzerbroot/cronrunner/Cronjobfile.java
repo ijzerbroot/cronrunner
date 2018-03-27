@@ -10,14 +10,13 @@ public class Cronjobfile {
 
     public void writefile(String fname, String tekst)
             throws IOException {
-        String str = tekst;
 
         // set file executable
         File scriptfile = new File(fname);
-        scriptfile.setExecutable(true);
+        final boolean b = scriptfile.setExecutable(true);
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(fname));
-        writer.write(str);
+        writer.write(tekst);
         writer.close();
 
     }

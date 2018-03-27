@@ -86,11 +86,11 @@ public class Main {
                     try {
                         int exitcode = jobproc.waitFor();
                         if (exitcode != 0) {
-                            logentry.put("timestamp", cal.getTime());
+                            logentry.put("timestamp", sdf.format(cal.getTime()));
                             logentry.put("result", "KO");
                             logentry.put("log", output(jobproc.getErrorStream()));
                         } else {
-                            logentry.put("timestamp", cal.getTime());
+                            logentry.put("timestamp", sdf.format(cal.getTime()));
                             logentry.put("result", "OK");
                             logentry.put("log", output(jobproc.getInputStream()));
                         }
@@ -119,7 +119,7 @@ public class Main {
             br = new BufferedReader(new InputStreamReader(inputStream));
             String line = null;
             while ((line = br.readLine()) != null) {
-                sb.append(line + System.getProperty("line.separator"));
+                sb.append(line); sb.append(System.getProperty("line.separator"));
             }
         } finally {
             br.close();

@@ -48,7 +48,7 @@ public class Mongodbo {
     public List<String> getcronjobs(String mongourl) {
 
         List<String> cronjoblist = new ArrayList<String>();
-        String cronjobline = "";
+        String cronjobline;
 
         BasicDBObject query;
         query = new BasicDBObject();

@@ -13,7 +13,7 @@ import java.io.IOException;
  *
  * @author fhoeben
  */
-public class Cronfile {
+class Cronfile {
 
            String fileName = "crontab.txt";
            
@@ -29,9 +29,8 @@ public class Cronfile {
     
     public void appendcronfile(String cronjob)
   throws IOException {
-    String str = cronjob;
     BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true));
-    writer.append(str);
+    writer.append(cronjob);
      
     writer.close();
 }
