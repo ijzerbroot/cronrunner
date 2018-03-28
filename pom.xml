@@ -74,11 +74,13 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <executable>sh</executable>
+                    <executable>cmd</executable>
                     <!-- optional -->
                     <workingDirectory>resources</workingDirectory>
                     <arguments>
-                        <argument>postbuild.sh</argument>
+                        <argument>/C</argument>
+                        <argument>start</argument>
+                        <argument>postbuild.bat</argument>
                     </arguments>
                 </configuration>
             </plugin>

@@ -18,6 +18,13 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.bson.Document;
+import java.lang.ProcessBuilder.Redirect;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static java.nio.file.Files.readAllLines;
+
 
 /**
  * @author fhoeben
@@ -50,20 +57,18 @@ public class Main {
                     cfile.initcronfile();
                     List<String> cronjoblist = mongocon.getcronjobs(mongourl);
                     for (String s : cronjoblist) {
-                        System.out.println("cronjoblist: " + s);
                         cfile.appendcronfile(s + "\n");
                     }
                     List<String> cronjobscriptnamelist;
                     for (String s : cronjobscriptnamelist = mongocon.getcronjobscriptnames(mongourl)) {
                         cjfile.writefile(s, mongocon.getcronjobscript(mongourl, s));
-                        System.out.println("writefile: " + s);
                     }
                     // init crontab
                 } catch (IOException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (cmd.hasOption("cronjob")) {
-                System.out.println("Got cronjob");
+                System.out.println("Executing " + cmd.getOptionValue("cronjob"));
                 Mongodbo mongocon = new Mongodbo();
                 String logline = "";
                 Document logentry = new Document();
@@ -73,17 +78,28 @@ public class Main {
 
                 // exec job and catch stdin/stdout into Document
                 try {
-                    Process jobproc = new ProcessBuilder().command("sh", cmd.getOptionValue("cronjob")).start();
+                    String jobscript = cmd.getOptionValue("cronjob");
+                    ProcessBuilder pb = new ProcessBuilder().command("sh", jobscript);
+                    // pb.directory(new File("/logs"));
+                    File log = new File("/logs/" + jobscript + ".log");
+                    pb.redirectErrorStream(true);
+                    pb.redirectOutput(Redirect.appendTo(log));
+                    Process jobproc = pb.start();
+                    assert pb.redirectInput() == Redirect.PIPE;
+                    assert pb.redirectOutput().file() == log;
+                    assert jobproc.getInputStream().read() == -1;
+                    Charset charset = Charset.forName("UTF-8");
+                    Path logfilepath = Paths.get("/logs", jobscript + ".log");
                     try {
                         int exitcode = jobproc.waitFor();
                         if (exitcode != 0) {
                             logentry.put("timestamp", sdf.format(cal.getTime()));
                             logentry.put("result", "KO");
-                            logentry.put("log", output(jobproc.getErrorStream()));
+                            logentry.put("log", readAllLines(logfilepath, charset));
                         } else {
                             logentry.put("timestamp", sdf.format(cal.getTime()));
                             logentry.put("result", "OK");
-                            logentry.put("log", output(jobproc.getInputStream()));
+                            logentry.put("log", readAllLines(logfilepath, charset));
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -95,7 +111,7 @@ public class Main {
                 mongocon.insertLog(mongourl, logentry);
                 // exec cronjob
             } else {
-                System.out.println("Got nothing");
+                System.out.println("Neither initcron nor cronjob argument was provided.");
             }
         } catch (ParseException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);

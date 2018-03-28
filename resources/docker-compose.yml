@@ -11,6 +11,8 @@ services:
    restart: on-failure
    networks:
      - cronrunner
+   volumes:
+     - cronlogs:/logs
    deploy:
      mode: global
 #   volumes:
@@ -34,3 +36,4 @@ services:
 
 volumes:
   cronmongodata:
+  cronlogs:

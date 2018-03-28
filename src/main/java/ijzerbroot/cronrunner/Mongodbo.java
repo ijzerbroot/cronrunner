@@ -15,14 +15,18 @@ import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author fhoeben
  */
-public class Mongodbo {
+class Mongodbo {
 
-    public MongoCursor<Document> runQuery(String mongourl, BasicDBObject query) {
+    MongoCursor<Document> runQuery(String mongourl, BasicDBObject query) {
+        Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
+        mongoLogger.setLevel(Level.SEVERE);
         MongoClient mongoClient;
         mongoClient = new MongoClient(new MongoClientURI(mongourl));
         MongoDatabase database;
@@ -34,7 +38,9 @@ public class Mongodbo {
         return cursor;
     }
 
-    public void insertLog(String mongourl, Document logentry) {
+    void insertLog(String mongourl, Document logentry) {
+        Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
+        mongoLogger.setLevel(Level.SEVERE);
         MongoClient mongoClient;
         mongoClient = new MongoClient(new MongoClientURI(mongourl));
         MongoDatabase database;
@@ -45,7 +51,7 @@ public class Mongodbo {
         mongoClient.close();
     }
 
-    public List<String> getcronjobs(String mongourl) {
+    List<String> getcronjobs(String mongourl) {
 
         List<String> cronjoblist = new ArrayList<String>();
         String cronjobline;
@@ -57,9 +63,7 @@ public class Mongodbo {
             while (cursor.hasNext()) {
            //     System.out.println(cursor.next().toJson());
                 Document cronjobentry = cursor.next();
-                System.out.println("getting cronline for: " + cronjobentry.get("jobname"));
                 cronjobline = cronjobentry.get("schedule") + " cronrunner.sh -cronjob " + cronjobentry.get("scriptname");
-                System.out.println(cronjobline);
                 cronjoblist.add(cronjobline);
             }
             return cronjoblist;
@@ -68,7 +72,7 @@ public class Mongodbo {
         }
     }
 
-    public List<String> getcronjobscriptnames(String mongourl) {
+    List<String> getcronjobscriptnames(String mongourl) {
 
         List<String> cronjoblist = new ArrayList<String>();
         String cronjobscriptname = "";
@@ -81,7 +85,6 @@ public class Mongodbo {
                 //     System.out.println(cursor.next().toJson());
                 Document cronjobentry = cursor.next();
                 cronjobscriptname = cronjobentry.get("scriptname").toString();
-                System.out.println(cronjobscriptname);
                 cronjoblist.add(cronjobscriptname);
             }
             return cronjoblist;
@@ -90,7 +93,7 @@ public class Mongodbo {
         }
     }
 
-    public String getcronjobscript(String mongourl, String scriptname) {
+    String getcronjobscript(String mongourl, String scriptname) {
 
         String cronjobscript = "";
 
@@ -103,7 +106,6 @@ public class Mongodbo {
                 //     System.out.println(cursor.next().toJson());
                 Document cronjobentry = cursor.next();
                 cronjobscript = cronjobentry.get("script").toString();
-                System.out.println(cronjobscript);
             }
             return cronjobscript;
         } finally {
